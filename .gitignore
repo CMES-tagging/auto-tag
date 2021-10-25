@@ -4,4 +4,6 @@ lib64
 pyvenv.cfg
 share/
 *.pdf
+*.bk
 auto-tag/*.pdf
+auto-tag/__pycache__/*
