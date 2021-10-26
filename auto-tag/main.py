@@ -57,10 +57,12 @@ def main():
             text = two_cols_to_one(text)
             print('... length of text:', len(text))
 
-        # split document into articles
-        # returns list of articles
-        text = split_articles(text)
-        print('... length of text:', len(text))
+            # split document into articles
+            # returns list of articles
+            text = split_articles(text)
+            print('... length of text:', len(text))
+
+        # exit, or continue
         print()
         response = input('Press X to exit; press any other key to clear the screen and enter another request:  ')
         if response.lower() == 'x':
