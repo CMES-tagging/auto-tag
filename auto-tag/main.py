@@ -19,12 +19,29 @@ def main():
     # returns list (pages) of lists (lines)
     path = '../../pdf/'
     pdfs = os.listdir(path)
-    pdfs = [path+file for file in pdfs if file[-4:] == '.pdf']
-    clear()
-    n = 0
-    print('Processing...')
-    for f in pdfs:
-        if re.search('\d\d\d+_EMRAP.*?_Written_Summary.*\.pdf', f):
+    while True:
+        clear()
+        print('Enter the ID of a file to process, or choose from the menu below.')
+        response = input('E, for EMRAP files; R, for ROP files:  ')
+        if response.lower() == 'e':
+            npdfs = [path+file for file in pdfs if re.search('\d\d\d+_EMRAP_.*\.pdf', file)]
+        elif response.lower() == 'r':
+            npdfs = [path+file for file in pdfs if re.search('\d\d\d+_ROP_.*\.pdf', file)]
+        elif re.search('^\d\d+$', response.strip()):
+            found = False
+            for file in pdfs:
+                if file[:len(response.strip())+1] == response.strip()+'_':
+                    npdfs = [path+file]
+                    found = True
+                    break
+            if not found:
+                print('File not found.')
+                npdfs = []
+        else:
+            print('Invalid input.')
+            npdfs = []
+        n = 0
+        for f in npdfs:
             n += 1
             print('File:', n, f)
             text = pdf_to_text(f)
@@ -40,10 +57,14 @@ def main():
             text = two_cols_to_one(text)
             print('... length of text:', len(text))
 
-            # split document into articles
-            # returns list of articles
-            text = split_articles(text)
-            print('... length of text:', len(text))
+        # split document into articles
+        # returns list of articles
+        text = split_articles(text)
+        print('... length of text:', len(text))
+        print()
+        response = input('Press X to exit; press any other key to clear the screen and enter another request:  ')
+        if response.lower() == 'x':
+            break
 
 
 if __name__ == '__main__':
