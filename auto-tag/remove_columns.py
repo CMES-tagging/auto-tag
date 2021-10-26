@@ -10,17 +10,17 @@ def line_midpoint(page):
 
 # split lines by finding spaces near midpoint
 def split_line(line, mid):
-  try:
-    match = re.search('\s{3}(?=\S)', line[mid-20:mid+20])
-    if match:
-      # return tuple with line split
-      return (line[:mid-25+match.span()[0]].strip(), line[mid-25+match.span()[1]:].strip())
-    else:
-      # nothing in right column
-      return (line.strip(), '')
-  except:
-    # nothing in right column
-    return (line.strip(), '')
+    try:
+        match = re.search('\s{3}(?=\S)', line[mid-20:mid+20])
+        if match:
+            # return tuple with line split
+            return (line[:mid-25+match.span()[0]].strip(), line[mid-25+match.span()[1]:].strip())
+        else:
+            # nothing in right column
+            return (line.strip(), '')
+    except:
+        # nothing in right column
+        return (line.strip(), '')
 
 # rebuild document in continuous column
 def two_cols_to_one(doc):
