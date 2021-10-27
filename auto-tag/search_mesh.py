@@ -7,7 +7,8 @@ import json
 
 def gettgt():
     with open('apikey.txt') as f:
-        apikey = f.read()
+        apikey = f.readline().strip()
+    print(apikey)
     uri = 'https://utslogin.nlm.nih.gov'
     auth_endpoint = "/cas/v1/api-key"
     params = {'apikey': apikey}
