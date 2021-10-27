@@ -5,6 +5,7 @@ from remove_columns import *
 from split_articles import *
 from preprocessing import *
 from search_mesh import *
+from identify_entities import *
 
 import os
 import re
@@ -72,6 +73,10 @@ def main():
             filename = f[len(path):]
             df = preprocessing(filename, text)
             print(df)
+
+            # NER
+            df['entities'] = df['text_expanded'].apply(entity_extraction)
+            df['entities_text'] = df['entities'].apply(list_to_string)
 
             # search mesh
             df['mesh_terms'] = df['entities_text'].apply(umls_search)

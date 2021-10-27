@@ -8,7 +8,6 @@ import json
 def gettgt():
     with open('apikey.txt') as f:
         apikey = f.readline().strip()
-    print(apikey)
     uri = 'https://utslogin.nlm.nih.gov'
     auth_endpoint = "/cas/v1/api-key"
     params = {'apikey': apikey}
@@ -37,14 +36,16 @@ def umls_search(string):
     pageNumber = 0
     terms = []
     
+    # temp
     test = 0
 
     for word in string.split():
         while True:
 
+            # temp
             test += 1
             print(test)
-            if test > 5:
+            if test > 4:
                 break
 
             pageNumber += 1
@@ -60,15 +61,20 @@ def umls_search(string):
                 if jsonData["results"][0]["ui"] != "NONE":
                     terms.append((result["name"],result["ui"]))
 
+                    # temp
+                    # printing all terms
                     print(result["name"],result["ui"])
 
             if jsonData["results"][0]["ui"] == "NONE":
                 break
-        if test > 5:
+        
+        # temp
+        if test > 4:
             break
 
     if terms == []:
         return ''
     else:
+        # only returning first term
         return terms[0]
 
