@@ -36,18 +36,39 @@ def umls_search(string):
     returnIdType = 'sourceUi'
     pageNumber = 0
     terms = []
-    while True:
-        pageNumber += 1
-        ticket = getst(tgt)
-        query = {'string' : string, 'ticket' : ticket, 'searchType' : 'words', 
-                'returnIdType' : returnIdType, 'pageNumber' : pageNumber, 'sabs' : vocab}
-        r = requests.get(uri+content_endpoint,params=query)
-        r.encoding = 'utf-8'
-        items  = json.loads(r.text)
-        jsonData = items["result"]
-        for result in jsonData["results"]:
-            if jsonData["results"][0]["ui"] != "NONE":
-                terms.append((result["name"],result["ui"]))
-        if jsonData["results"][0]["ui"] == "NONE":
+    
+    test = 0
+
+    for word in string.split():
+        while True:
+
+            test += 1
+            print(test)
+            if test > 5:
+                break
+
+            pageNumber += 1
+            ticket = getst(tgt)
+            query = {'string' : word, 'ticket' : ticket, 'searchType' : 'words', 
+                    'returnIdType' : returnIdType, 'pageNumber' : pageNumber, 'sabs' : vocab}
+            r = requests.get(uri+content_endpoint,params=query)
+            r.encoding = 'utf-8'
+            items  = json.loads(r.text)
+            jsonData = items["result"]
+            
+            for result in jsonData["results"]:
+                if jsonData["results"][0]["ui"] != "NONE":
+                    terms.append((result["name"],result["ui"]))
+
+                    print(result["name"],result["ui"])
+
+            if jsonData["results"][0]["ui"] == "NONE":
+                break
+        if test > 5:
             break
-    return terms
+
+    if terms == []:
+        return ''
+    else:
+        return terms[0]
+
