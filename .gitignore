@@ -7,3 +7,4 @@ share/
 *.bk
 auto-tag/*.pdf
 auto-tag/__pycache__/*
+auto-tag/apikey.txt
