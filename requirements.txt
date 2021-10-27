@@ -1,2 +1,16 @@
-pandas 1.3.4
-contractions 0.0.52
+contractions==0.0.52
+cymem==2.0.6
+en-core-sci-lg==0.4.0
+en-core-sci-sm==0.4.0
+en-ner-bc5cdr-md==0.4.0
+en-ner-bionlp13cg-md==0.4.0
+en-ner-craft-md==0.4.0
+en-ner-jnlpba-md==0.4.0
+lxml==4.6.3
+numpy==1.21.3
+pandas==1.3.4
+pdftotext==2.2.1
+requests==2.26.0
+scikit-learn==1.0.1
+scispacy==0.4.0
+spacy==3.0.7
