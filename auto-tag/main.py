@@ -4,6 +4,7 @@ from display_text import *
 from remove_columns import *
 from split_articles import *
 from preprocessing import *
+from search_mesh import *
 
 import os
 import re
@@ -69,7 +70,12 @@ def main():
             # create DataFrame
             # preprocessing
             filename = f[len(path):]
-            print(preprocessing(filename, text))
+            df = preprocessing(filename, text)
+            print(df)
+
+            # search mesh
+            df['mesh_terms'] = df['entities_text'].apply(umls_search)
+            print(df)
 
         # exit, or continue
         print()

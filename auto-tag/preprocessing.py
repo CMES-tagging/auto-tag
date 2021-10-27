@@ -26,20 +26,13 @@ def contraction_expansion(text):
         expanded_word.append(contractions.fix(word))   
     return  ' '.join(expanded_word)
 
-# this uses the scispaCy large vocabulary to find entities in an input column and write them to an output column
-# ARGUMENTS: dataframe, input column, output column
-def find_entities(df, input_col, output_col):
-    for i in range(0, len(df[input_col])):
-        text = df[input_col][i]
-        print("processing document #" + str(i))
-        doc = nlp(text)
-        ents = list(doc.ents) 
-        df.at[i, output_col] = ents
-
 def entity_extraction(text):
     doc = nlp(text)
     return list(doc.ents)
 
+def list_to_string(lst):
+    lst = [str(term) for term in lst]
+    return ' '.join(lst)
 
 def preprocessing(filename, text):
     id = filename[:re.search('_', filename).span()[0]]
@@ -48,4 +41,5 @@ def preprocessing(filename, text):
     df['text_expanded'] = df['text'].apply(contraction_expansion)
     # load scispacy model
     df['entities'] = df['text_expanded'].apply(entity_extraction)
+    df['entities_text'] = df['entities'].apply(list_to_string)
     return df
