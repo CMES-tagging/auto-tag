@@ -3,6 +3,7 @@ from remove_lines import *
 from display_text import *
 from remove_columns import *
 from split_articles import *
+from preprocessing import *
 
 import os
 import re
@@ -61,6 +62,14 @@ def main():
             # returns list of articles
             text = split_articles(text)
             print('... length of text:', len(text))
+            for article in text:
+                if article.strip() != '':
+                    print('\n'+article)
+
+            # create DataFrame
+            # preprocessing
+            filename = f[len(path):]
+            print(preprocessing(filename, text))
 
         # exit, or continue
         print()

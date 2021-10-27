@@ -15,5 +15,5 @@ def split_articles(doc):
             article_text.append(line)
         split_text.append(article_text)
         current = pos-1
-    return split_text            
+    return [' '.join(article) for article in split_text]            
 
