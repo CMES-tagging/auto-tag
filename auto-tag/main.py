@@ -4,8 +4,8 @@ from display_text import *
 from remove_columns import *
 from split_articles import *
 from preprocessing import *
-from search_mesh import *
 from identify_entities import *
+from search_mesh import *
 
 import os
 import re
