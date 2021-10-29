@@ -35,19 +35,11 @@ def umls_search(string):
     returnIdType = 'sourceUi'
     pageNumber = 0
     terms = []
-    
-    # temp
-    test = 0
-
-    for word in string.split():
+    for i, word in enumerate(string.split()):
+        # search first 3 terms only
+        if i > 0:
+            break
         while True:
-
-            # temp
-            test += 1
-            print(test)
-            if test > 4:
-                break
-
             pageNumber += 1
             ticket = getst(tgt)
             query = {'string' : word, 'ticket' : ticket, 'searchType' : 'words', 
@@ -56,22 +48,13 @@ def umls_search(string):
             r.encoding = 'utf-8'
             items  = json.loads(r.text)
             jsonData = items["result"]
-            
             for result in jsonData["results"]:
                 if jsonData["results"][0]["ui"] != "NONE":
                     terms.append((result["name"],result["ui"]))
-
-                    # temp
-                    # printing all terms
-                    print(result["name"],result["ui"])
-
+                    print(result['name'], result['ui'])
+                    break
             if jsonData["results"][0]["ui"] == "NONE":
                 break
-        
-        # temp
-        if test > 4:
-            break
-
     if terms == []:
         return ''
     else:

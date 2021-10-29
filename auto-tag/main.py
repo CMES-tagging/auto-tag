@@ -8,8 +8,8 @@ from identify_entities import *
 from search_mesh import *
 
 import os
-import re
 
+# clear screen for Windows, Mac, Linux OS
 def clear():
     if os.name == 'nt':
         _ = os.system('cls')
@@ -19,11 +19,19 @@ def clear():
 def main():
 
     # read PDF files
-    # returns list (pages) of lists (lines)
     path = '../../pdf/'
     pdfs = os.listdir(path)
+
+    # create empty dataframe 
+    columns = ['id', 'filename', 'text', 'text_expanded', 'entities', 'entities_text', 'mesh_terms']
+    df = pd.DataFrame(columns = columns)
+
+    # loop over files
     while True:
+
         clear()
+
+        # menu
         print('Enter the ID of a file to process, or choose from the menu below.')
         response = input('E, for EMRAP files; R, for ROP files:  ')
         if response.lower() == 'e':
@@ -64,26 +72,29 @@ def main():
             # returns list of articles
             text = split_articles(text)
             print('... length of text:', len(text))
-            for article in text:
-                if article.strip() != '':
-                    print('\n'+article)
 
             # create DataFrame
             # preprocessing
             filename = f[len(path):]
-            df = preprocessing(filename, text)
-            print(df)
+            df_add = preprocessing(filename, text)
 
             # NER
-            df['entities'] = df['text_expanded'].apply(entity_extraction)
-            df['entities_text'] = df['entities'].apply(list_to_string)
+            print('identifying entities ...')
+            df_add['entities'] = df_add['text_expanded'].apply(entity_extraction)
+            df_add['entities_text'] = df_add['entities'].apply(list_to_string)
+            print(df_add)
 
             # search mesh
-            df['mesh_terms'] = df['entities_text'].apply(umls_search)
-            print(df)
+            print('searching mesh ...')
+            df_add['mesh_terms'] = df_add['entities_text'].apply(umls_search)
 
-        # exit, or continue
-        print()
+            # add new rows to dataframe
+            df = pd.concat([df, df_add], axis = 0)
+
+        # print dataframe to console
+        print(df)
+
+        # menu
         response = input('Press X to exit; press any other key to clear the screen and enter another request:  ')
         if response.lower() == 'x':
             break
