@@ -4,3 +4,5 @@ title: Automatic Tagging of Medical Documents
 plugins:
   - jekyll-remote-theme
 remote_theme: ngzhio/jekyll-theme-hamilton
+skin: daylight
+subscribe: false
