@@ -1,5 +1,9 @@
 ## Welcome to GitHub Pages
 
+[link to page 1](page1.md)
+
+[link to page 2](page2.md)
+
 You can use the [editor on GitHub](https://github.com/CMES-tagging/auto-tag/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
 
 Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
