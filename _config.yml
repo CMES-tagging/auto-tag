@@ -1,3 +1,6 @@
-remote_theme: pages-themes/minimal@v0.2.0
+# remote_theme: pages-themes/minimal@v0.2.0
 logo: /assets/img/logo.png
 title: Automatic Tagging of Medical Documents
+plugins:
+  - jekyll-remote-theme
+remote_theme: ngzhio/jekyll-theme-hamilton
