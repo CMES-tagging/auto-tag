@@ -169,28 +169,32 @@ def list_to_string(lst):
     return ' '.join(lst)
 
 def  get_umls_terms(text, tags):
-    libs = ['en_core_sci_md','en_ner_craft_md','
-    nlp = spacy.load("en_ner_bionlp13cg_md")
-    nlp.add_pipe("abbreviation_detector")
-    nlp.add_pipe("scispacy_linker", config={"resolve_abbreviations": True, "linker_name": "mesh"})
-    doc = nlp(text)
-    linker = nlp.get_pipe("scispacy_linker")
-    terms = []
-    for ent in doc.ents:
-        entity = ent.text
-        label = ent.label_
-        for umls_ent in ent._.kb_ents:
-            if float(umls_ent[1]) == 1.0:
-                cui = umls_ent[0]
-                umls_term = linker.kb.cui_to_entity[umls_ent[0]].canonical_name
-                terms.append((cui, umls_term))
-    terms = sorted(list(set(terms)))
-    print('\nSuggested Mesh terms:')
-    for term in terms:
-        print(term[0], term[1])
     print('\nExisting tags:')
     for tag in tags:
         print(tag)
+    libs = ['en_core_sci_md','en_ner_craft_md','en_ner_bc5cdr_md','en_ner_jnlpba_md','en_ner_bionlp13cg_md']
+    for lib in libs:
+        print('\nSuggested MeSH terms (using', lib+'):')
+        nlp = spacy.load(lib)
+        nlp.add_pipe("abbreviation_detector")
+        nlp.add_pipe("scispacy_linker", config={"resolve_abbreviations": True, "linker_name": "mesh"})
+        doc = nlp(text)
+        linker = nlp.get_pipe("scispacy_linker")
+        terms = []
+        for ent in doc.ents:
+            entity = ent.text
+            label = ent.label_
+            for umls_ent in ent._.kb_ents:
+                if float(umls_ent[1]) == 1.0:
+                    cui = umls_ent[0]
+                    umls_term = linker.kb.cui_to_entity[umls_ent[0]].canonical_name
+                    terms.append((cui, umls_term))
+        terms = sorted(list(set(terms)))
+        if terms == []:
+            print('NONE')
+        else:
+            for term in terms:
+                print(term[0], term[1])
 
 #get ticket
 def gettgt():

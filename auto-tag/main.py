@@ -47,24 +47,24 @@ def main():
             id = int(re.match(path+'\d\d\d+_', f).group()[len(path):-1])
             n += 1
             print('\nFile:', n, f)
-            print('\n... extracting text')
+            print('... extracting text')
             text = pdf_to_text(f)
 
             # remove extraneous lines
             # returns list (pages) of lists (lines)
-            print('\n... removing headers and footers')
+            print('... removing headers and footers')
             text = remove_lines(text)
 
             if id >= 5482:
                 # merge columns
                 # returns list (pages) of lists (lines)
-                print('\n... merging columns')
+                print('... merging columns')
                 text = two_cols_to_one(text)
 
             # split document into articles
             if id >= 5482:
                 # returns list of articles
-                print('\n... splitting into articles')
+                print('... splitting into articles')
                 text = split_articles(text)
             else:
                 # returns simple list (one article)
@@ -72,7 +72,7 @@ def main():
                 text = [' '.join(text)] 
 
 
-            print('\n... finding MeSH terms')
+            print('... finding MeSH terms')
             try:
                 tags = tags_df.loc[tags_df['Topic_ID'] == id]['Tag_Names'].values[0]
             except:
