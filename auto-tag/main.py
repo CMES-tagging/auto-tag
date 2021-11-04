@@ -1,20 +1,4 @@
-from extract_text import *
-from remove_lines import *
-from display_text import *
-from remove_columns import *
-from split_articles import *
-from preprocessing import *
-from identify_entities import *
-from search_mesh import *
-
-import os
-
-# clear screen for Windows, Mac, Linux OS
-def clear():
-    if os.name == 'nt':
-        _ = os.system('cls')
-    else:
-        _ = os.system('clear')
+from auto_tag_func import *
 
 def main():
 
@@ -53,46 +37,57 @@ def main():
             npdfs = []
         n = 0
         for f in npdfs:
+            id = int(re.match(path+'\d\d\d+_', f).group()[len(path):-1])
             n += 1
             print('File:', n, f)
+            print('\n... extracting text')
             text = pdf_to_text(f)
-            print('... length of text:', len(text))
 
             # remove extraneous lines
             # returns list (pages) of lists (lines)
+            print('\n... removing headers and footers')
             text = remove_lines(text)
-            print('... length of text:', len(text))
 
-            # merge columns
-            # returns list (pages) of lists (lines)
-            text = two_cols_to_one(text)
-            print('... length of text:', len(text))
+            if id >= 5482:
+                # merge columns
+                # returns list (pages) of lists (lines)
+                print('\n... merging columns')
+                text = two_cols_to_one(text)
 
             # split document into articles
-            # returns list of articles
-            text = split_articles(text)
-            print('... length of text:', len(text))
+            if id >= 5482:
+                # returns list of articles
+                print('\n... splitting into articles:')
+                text = split_articles(text)
+            else:
+                # returns simple list (one article)
+                text = [line.strip() for page in text for line in page]
+                text = [' '.join(text)] 
+            print('File:', n, f)
+            print(text)
+
+            get_umls_terms(text[0])
 
             # create DataFrame
             # preprocessing
-            filename = f[len(path):]
-            df_add = preprocessing(filename, text)
+#            filename = f[len(path):]
+#            df_add = preprocessing(filename, text)
 
             # NER
-            print('identifying entities ...')
-            df_add['entities'] = df_add['text_expanded'].apply(entity_extraction)
-            df_add['entities_text'] = df_add['entities'].apply(list_to_string)
-            print(df_add)
+#            print('\n... identifying entities ...')
+#            df_add['entities'] = df_add['text_expanded'].apply(entity_extraction)
+#            df_add['entities_text'] = df_add['entities'].apply(list_to_string)
+#            print(df_add)
 
             # search mesh
-            print('searching mesh ...')
-            df_add['mesh_terms'] = df_add['entities_text'].apply(umls_search)
+#            print('searching mesh ...')
+#            df_add['mesh_terms'] = df_add['entities_text'].apply(umls_search)
 
             # add new rows to dataframe
-            df = pd.concat([df, df_add], axis = 0)
+#            df = pd.concat([df, df_add], axis = 0)
 
         # print dataframe to console
-        print(df)
+#        print(df)
 
         # menu
         response = input('Press X to exit; press any other key to clear the screen and enter another request:  ')
