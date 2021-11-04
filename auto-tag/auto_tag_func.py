@@ -168,33 +168,25 @@ def list_to_string(lst):
     lst = [str(term) for term in lst]
     return ' '.join(lst)
 
-#def  get_umls_terms(text):
-#    nlp = spacy.load("en_ner_bionlp13cg_md")
-#    nlp.add_pipe("abbreviation_detector")
-#    nlp.add_pipe("scispacy_linker", config={"resolve_abbreviations": True, "linker_name": "umls"})
-#    doc = nlp(text)
-#    linker = nlp.get_pipe("scispacy_linker")
-#    for ent in doc.ents:
-#        entity = ent.text
-#        label = ent.label_
-#        for umls_ent in ent._.kb_ents:
-#            if float(umls_ent[1]) == 1.0:
-#                print(linker.kb.cui_to_entity[umls_ent[0]])
-
-def get_umls_terms(text):
+def  get_umls_terms(text):
     nlp = spacy.load("en_ner_bionlp13cg_md")
     nlp.add_pipe("abbreviation_detector")
-    nlp.add_pipe("scispacy_linker", config={"resolve_abbreviations": True, "linker_name": "umls"})
+    nlp.add_pipe("scispacy_linker", config={"resolve_abbreviations": True, "linker_name": "mesh"})
     doc = nlp(text)
-    concept_entity = []
-    all_umls_data = []
-    for entity in doc.ents:
-        highest_umls_ent = entity._.kb_ents[0]
-        conceptentity.append((highest_umls_ent[0], entity))
-        umls_data = linker.kb.cui_to_entity[highest_umls_ent[0]]
-        all_umls_data.append(umls_data)
-    umls_df = pd.DataFrame(all_umls_data)
-    print(umls_df)
+    linker = nlp.get_pipe("scispacy_linker")
+    terms = []
+    for ent in doc.ents:
+        entity = ent.text
+        label = ent.label_
+        for umls_ent in ent._.kb_ents:
+            if float(umls_ent[1]) == 1.0:
+                cui = umls_ent[0]
+                umls_term = linker.kb.cui_to_entity[umls_ent[0]].canonical_name
+                terms.append((cui, umls_term))
+    terms = sorted(list(set(terms)))
+    print('\nSuggested Mesh terms:')
+    for term in terms:
+        print(term[0], term[1])
 
 #get ticket
 def gettgt():

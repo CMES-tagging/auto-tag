@@ -39,7 +39,7 @@ def main():
         for f in npdfs:
             id = int(re.match(path+'\d\d\d+_', f).group()[len(path):-1])
             n += 1
-            print('File:', n, f)
+            print('\nFile:', n, f)
             print('\n... extracting text')
             text = pdf_to_text(f)
 
@@ -57,15 +57,15 @@ def main():
             # split document into articles
             if id >= 5482:
                 # returns list of articles
-                print('\n... splitting into articles:')
+                print('\n... splitting into articles')
                 text = split_articles(text)
             else:
                 # returns simple list (one article)
                 text = [line.strip() for page in text for line in page]
                 text = [' '.join(text)] 
-            print('File:', n, f)
-            print(text)
 
+
+            print('\n... finding MeSH terms')
             get_umls_terms(text[0])
 
             # create DataFrame
@@ -90,7 +90,7 @@ def main():
 #        print(df)
 
         # menu
-        response = input('Press X to exit; press any other key to clear the screen and enter another request:  ')
+        response = input('\nPress X to exit; press any other key to clear the screen and enter another request:  ')
         if response.lower() == 'x':
             break
 
