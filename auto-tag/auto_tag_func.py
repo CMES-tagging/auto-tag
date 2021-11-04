@@ -168,7 +168,7 @@ def list_to_string(lst):
     lst = [str(term) for term in lst]
     return ' '.join(lst)
 
-def  get_umls_terms(text):
+def  get_umls_terms(text, tags):
     nlp = spacy.load("en_ner_bionlp13cg_md")
     nlp.add_pipe("abbreviation_detector")
     nlp.add_pipe("scispacy_linker", config={"resolve_abbreviations": True, "linker_name": "mesh"})
@@ -187,6 +187,9 @@ def  get_umls_terms(text):
     print('\nSuggested Mesh terms:')
     for term in terms:
         print(term[0], term[1])
+    print('\nExisting tags:')
+    for tag in tags:
+        print(tag)
 
 #get ticket
 def gettgt():

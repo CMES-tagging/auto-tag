@@ -6,6 +6,13 @@ def main():
     path = '../../pdf/'
     pdfs = os.listdir(path)
 
+    # read CSV files
+    tags1_df = pd.read_csv('../../csv/cmes_tags.csv')
+    tags2_df = pd.read_csv('../../csv/additional_tags.csv')
+    tags_df = pd.concat([tags1_df[['Topic_ID', 'Tag_Name']], tags2_df[['Topic_ID', 'Tag_Name']]], axis=0)
+    tags_df = tags_df.drop_duplicates()
+    tags_df = tags_df.groupby(['Topic_ID'])['Tag_Name'].apply(list).reset_index(name='Tag_Names')
+    
     # create empty dataframe 
     columns = ['id', 'filename', 'text', 'text_expanded', 'entities', 'entities_text', 'mesh_terms']
     df = pd.DataFrame(columns = columns)
@@ -66,7 +73,11 @@ def main():
 
 
             print('\n... finding MeSH terms')
-            get_umls_terms(text[0])
+            try:
+                tags = tags_df.loc[tags_df['Topic_ID'] == id]['Tag_Names'].values[0]
+            except:
+                tags = []
+            get_umls_terms(text[0],tags)
 
             # create DataFrame
             # preprocessing
