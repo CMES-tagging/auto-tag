@@ -172,10 +172,10 @@ def  get_umls_terms(text, tags):
     print('\nExisting tags:')
     for tag in tags:
         print(tag)
-    libs = ['en_core_sci_md','en_ner_craft_md','en_ner_bc5cdr_md','en_ner_jnlpba_md','en_ner_bionlp13cg_md']
-    for lib in libs:
-        print('\nSuggested MeSH terms (using', lib+'):')
-        nlp = spacy.load(lib)
+    models = ['en_core_sci_md','en_ner_craft_md','en_ner_bc5cdr_md','en_ner_jnlpba_md','en_ner_bionlp13cg_md']
+    for model in models:
+        print('\nSuggested MeSH terms (using', model+'):')
+        nlp = spacy.load(model)
         nlp.add_pipe("abbreviation_detector")
         nlp.add_pipe("scispacy_linker", config={"resolve_abbreviations": True, "linker_name": "mesh"})
         doc = nlp(text)
