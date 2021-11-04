@@ -9,13 +9,13 @@ import scispacy
 
 #Core models
 #import en_core_sci_sm
-#import en_core_sci_md
+import en_core_sci_md
 #import en_core_sci_lg
 
 #NER specific models
-#import en_ner_craft_md
-#import en_ner_bc5cdr_md
-#import en_ner_jnlpba_md
+import en_ner_craft_md
+import en_ner_bc5cdr_md
+import en_ner_jnlpba_md
 import en_ner_bionlp13cg_md
 
 #Tools for extracting & displaying data
@@ -169,6 +169,7 @@ def list_to_string(lst):
     return ' '.join(lst)
 
 def  get_umls_terms(text, tags):
+    libs = ['en_core_sci_md','en_ner_craft_md','
     nlp = spacy.load("en_ner_bionlp13cg_md")
     nlp.add_pipe("abbreviation_detector")
     nlp.add_pipe("scispacy_linker", config={"resolve_abbreviations": True, "linker_name": "mesh"})
