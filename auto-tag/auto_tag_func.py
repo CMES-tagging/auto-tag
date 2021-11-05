@@ -170,8 +170,11 @@ def list_to_string(lst):
 
 def  get_umls_terms(text, tags):
     print('\nExisting tags:')
-    for tag in tags:
-        print(tag)
+    if tags == []:
+        print('NONE')
+    else:
+        for tag in tags:
+            print(tag)
     models = ['en_core_sci_md','en_ner_craft_md','en_ner_bc5cdr_md','en_ner_jnlpba_md','en_ner_bionlp13cg_md']
     for model in models:
         print('\nSuggested MeSH terms (using', model+'):')
