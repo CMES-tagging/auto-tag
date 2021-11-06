@@ -1,10 +1,11 @@
 bin/
 lib/
 lib64
-pyvenv.cfg
 share/
+pyvenv.cfg
 *.pdf
 *.bk
 auto-tag/*.pdf
-auto-tag/__pycache__/*
+auto-tag/__pycache__/
+auto-tag/output/
 auto-tag/apikey.txt
