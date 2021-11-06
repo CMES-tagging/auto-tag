@@ -89,6 +89,8 @@ def main():
                 tags = tags_df.loc[tags_df['Topic_ID'] == id]['Tag_Names'].values[0]
             except:
                 tags = []
+            if tags == ['N/A']:
+                tags = []
             x = get_umls_terms(text[0],tags, screen)
             x.insert(0, f)
             x.insert(0, id)

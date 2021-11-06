@@ -175,8 +175,9 @@ def  get_umls_terms(text, tags, screen):
         print('NONE')
     else:
         for tag in tags:
-            print(tag)
-            tag_list.append(tag)
+            if tag == tag: # check for NaN
+                print(tag)
+                tag_list.append(tag)
     umls_list.append(tag_list)
     models = ['en_core_sci_lg','en_ner_craft_md','en_ner_bc5cdr_md','en_ner_jnlpba_md','en_ner_bionlp13cg_md']
     first = True
