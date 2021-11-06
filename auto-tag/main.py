@@ -18,17 +18,24 @@ def main():
     df = pd.DataFrame(columns = columns)
 
     # loop over files
+    terms_out = []
+
     while True:
 
         clear()
 
         # menu
         print('Enter the ID of a file to process, or choose from the menu below.')
-        response = input('E, for EMRAP files; R, for ROP files:  ')
+        print('For a single file, output is to screen.')
+        print('For multiple files, outut is to a CSV file: \'output/mesh.csv\'\n')
+        print('Enter:\nA file id\nE, for EMRAP files\nR, for ROP files\nN for all files between 141 and 5481.\n')
+        response = input('-> ')
         if response.lower() == 'e':
             npdfs = [path+file for file in pdfs if re.search('\d\d\d+_EMRAP_.*\.pdf', file)]
         elif response.lower() == 'r':
             npdfs = [path+file for file in pdfs if re.search('\d\d\d+_ROP_.*\.pdf', file)]
+        elif response.lower() == 'n':
+            npdfs = [path+file for file in pdfs if re.search('\d\d\d+_.*\.pdf', file) and int(re.search('\d\d\d+_', file).group()[:-1]) < 5482]
         elif re.search('^\d\d+$', response.strip()):
             found = False
             for file in pdfs:
@@ -43,10 +50,15 @@ def main():
             print('Invalid input.')
             npdfs = []
         n = 0
+        if len(npdfs) == 1:
+            screen = True
+        else:
+            screen = False
+        
         for f in npdfs:
             id = int(re.match(path+'\d\d\d+_', f).group()[len(path):-1])
             n += 1
-            print('\nFile:', n, f)
+            print('\n\nFile:', n, f)
             print('... extracting text')
             text = pdf_to_text(f)
 
@@ -77,10 +89,18 @@ def main():
                 tags = tags_df.loc[tags_df['Topic_ID'] == id]['Tag_Names'].values[0]
             except:
                 tags = []
-            get_umls_terms(text[0],tags)
+            x = get_umls_terms(text[0],tags, screen)
+            x.insert(0, f)
+            x.insert(0, id)
+            terms_out.append(x)
+#            if n > 1:
+#                break
+        
+        df = pd.DataFrame(terms_out, columns=['id','filename','tags','en_core_sci_lg','en_ner_craft_md','en_ner_bc5cdr_md','en_ner_jnlpba_md','en_ner_bionlp13cg_md'])
+        df.to_csv('output/mesh.csv')
 
-            # create DataFrame
-            # preprocessing
+#            create DataFrame
+#            preprocessing
 #            filename = f[len(path):]
 #            df_add = preprocessing(filename, text)
 

@@ -8,9 +8,9 @@ import spacy
 import scispacy
 
 #Core models
-#import en_core_sci_sm
+import en_core_sci_sm
 import en_core_sci_md
-#import en_core_sci_lg
+import en_core_sci_lg
 
 #NER specific models
 import en_ner_craft_md
@@ -168,16 +168,27 @@ def list_to_string(lst):
     lst = [str(term) for term in lst]
     return ' '.join(lst)
 
-def  get_umls_terms(text, tags):
+def  get_umls_terms(text, tags, screen):
+    umls_list, tag_list  = [], []
     print('\nExisting tags:')
     if tags == []:
         print('NONE')
     else:
         for tag in tags:
             print(tag)
-    models = ['en_core_sci_md','en_ner_craft_md','en_ner_bc5cdr_md','en_ner_jnlpba_md','en_ner_bionlp13cg_md']
+            tag_list.append(tag)
+    umls_list.append(tag_list)
+    models = ['en_core_sci_lg','en_ner_craft_md','en_ner_bc5cdr_md','en_ner_jnlpba_md','en_ner_bionlp13cg_md']
+    first = True
     for model in models:
-        print('\nSuggested MeSH terms (using', model+'):')
+        if screen:
+            print('\nSuggested MeSH terms (using', model+'):')
+        else:
+            if first:
+                print('\nWriting CSV.', end='')
+                first = False
+            else:
+                print('.', end='', flush=True)
         nlp = spacy.load(model)
         nlp.add_pipe("abbreviation_detector")
         nlp.add_pipe("scispacy_linker", config={"resolve_abbreviations": True, "linker_name": "mesh"})
@@ -194,10 +205,14 @@ def  get_umls_terms(text, tags):
                     terms.append((cui, umls_term))
         terms = sorted(list(set(terms)))
         if terms == []:
-            print('NONE')
+            if screen:
+                print('NONE')
         else:
             for term in terms:
-                print(term[0], term[1])
+                if screen:
+                    print(term[0], term[1])
+        umls_list.append([term[1] for term in terms])
+    return ['\n'.join(terms) for terms in umls_list]
 
 #get ticket
 def gettgt():
