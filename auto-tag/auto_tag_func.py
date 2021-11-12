@@ -28,6 +28,8 @@ import lxml.html as lh
 from lxml.html import fromstring
 import json
 
+from termcolor import colored
+
 # clear screen for Windows, Mac, Linux OS
 def clear():
     if os.name == 'nt':
@@ -211,7 +213,11 @@ def  get_umls_terms(text, tags, screen):
         else:
             for term in terms:
                 if screen:
-                    print(term[0], term[1])
+                    parent_list = []
+                    for term_tuple in walk_hierarchy(term[0], 'parents'):
+                        parent_list.append(term_tuple[0])
+                    t = colored(term[0]+' '+term[1]+' '*max(1, (35-len(term[1])))+'-> Parents: '+'; '.join(parent_list), 'cyan')
+                    print(t)
         umls_list.append([term[1] for term in terms])
     return ['\n'.join(terms) for terms in umls_list]
 
@@ -271,4 +277,27 @@ def umls_search(string):
     else:
         # only returning first term
         return terms[0]
+
+def walk_hierarchy(identifier, operation):
+    # identifier = MeSH id
+    # operation = 'atoms' | 'parents' | 'children' | 'ancestors' | 'descendants' | 'relations'
+    source = 'MSH'
+    uri = 'https://uts-ws.nlm.nih.gov'
+    content_endpoint = '/rest/content/current/source/'+source+'/'+identifier+'/'+operation
+    # get ticket for session
+    tgt = gettgt()
+    pageNumber = 1
+    terms = []
+    while True:
+        query = {'ticket' : getst(tgt), 'pageNumber' : pageNumber}
+        r = requests.get(uri+content_endpoint,params=query)
+        r.encoding = 'utf-8'
+        items  = json.loads(r.text)
+        pageCount=items['pageCount']
+        for result in items['result']:
+            terms.append((result['name'], result['ui']))
+        pageNumber += 1
+        if pageNumber > pageCount:
+            break
+    return terms
 
