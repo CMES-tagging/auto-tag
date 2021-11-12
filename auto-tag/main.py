@@ -26,10 +26,19 @@ def main():
 
         # menu
         print('Enter the ID of a file to process, or choose from the menu below.')
+        print('Add "t" to the end of the filename to process just the title.')
         print('For a single file, output is to screen.')
         print('For multiple files, outut is to a CSV file: \'output/mesh.csv\'\n')
         print('Enter:\nA file id\nE, for EMRAP files\nR, for ROP files\nN for all files between 141 and 5481.\n')
         response = input('-> ')
+        try:
+            if response.strip()[-1] == 't':
+                response = response[:-1]
+                use_title = True
+            else:
+                use_title = False
+        except:
+            continue
         if response.lower() == 'e':
             npdfs = [path+file for file in pdfs if re.search('\d\d\d+_EMRAP_.*\.pdf', file)]
         elif response.lower() == 'r':
@@ -58,40 +67,46 @@ def main():
         for f in npdfs:
             id = int(re.match(path+'\d\d\d+_', f).group()[len(path):-1])
             n += 1
-            print('\n\nFile:', n, f)
-            print('... extracting text')
+            print('\n\nFile:', str(n)+'.', colored(f[len(path):], 'cyan'))
             text = pdf_to_text(f)
 
             # remove extraneous lines
             # returns list (pages) of lists (lines)
-            print('... removing headers and footers')
             text = remove_lines(text)
 
             if id >= 5482:
                 # merge columns
                 # returns list (pages) of lists (lines)
-                print('... merging columns')
                 text = two_cols_to_one(text)
 
             # split document into articles
             if id >= 5482:
                 # returns list of articles
-                print('... splitting into articles')
-                text = split_articles(text)
+                titles, texts = split_articles(text)
+
             else:
                 # returns simple list (one article)
                 text = [line.strip() for page in text for line in page]
+                title = ''
+                author = ''
+                for i, line in enumerate(text):
+                    if re.search(r'(MD|DO)', line):
+                        title = ' '.join(text[:i])
+                        author = text[i]
+                        break
                 text = [' '.join(text)] 
 
-
-            print('... finding MeSH terms')
             try:
                 tags = tags_df.loc[tags_df['Topic_ID'] == id]['Tag_Names'].values[0]
             except:
                 tags = []
             if tags == ['N/A']:
                 tags = []
-            x = get_umls_terms(text[0],tags, screen)
+            if use_title:
+                txt = title
+            else:
+                txt = text[0]
+            x = get_umls_terms(title, author, txt, tags, screen)
             x.insert(0, f)
             x.insert(0, id)
             terms_out.append(x)

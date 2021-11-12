@@ -135,18 +135,20 @@ def two_cols_to_one(doc):
 def split_articles(doc):
     split_text = []
     title_pos = []
+    titles = []
     current = 0
     text = [line for page in doc for line in page]
     for i, line in enumerate(text):
         if re.search(r'(MD|DO)', line):
             title_pos.append(i)
+            titles.append(text[i-1])
     for pos in title_pos:
         article_text = []
         for line in text[current : pos-1]:
             article_text.append(line)
         split_text.append(article_text)
         current = pos-1
-    return [' '.join(article) for article in split_text]            
+    return titles, [' '.join(article) for article in split_text]            
 
 def contraction_expansion(text):
     expanded_word = []    
@@ -170,16 +172,18 @@ def list_to_string(lst):
     lst = [str(term) for term in lst]
     return ' '.join(lst)
 
-def  get_umls_terms(text, tags, screen):
+def  get_umls_terms(title, author, text, tags, screen):
     umls_list, tag_list  = [], []
     print('\nExisting tags:')
     if tags == []:
-        print('NONE')
+        print(colored('NONE', 'cyan'))
     else:
         for tag in tags:
             if tag == tag: # check for NaN
-                print(tag)
+                print(colored(tag, 'cyan'))
                 tag_list.append(tag)
+    print('\nTitle:', colored(title, 'cyan'))
+    print('Authors:', colored(author, 'cyan'))
     umls_list.append(tag_list)
     models = ['en_core_sci_lg','en_ner_craft_md','en_ner_bc5cdr_md','en_ner_jnlpba_md','en_ner_bionlp13cg_md']
     first = True
@@ -209,15 +213,14 @@ def  get_umls_terms(text, tags, screen):
         terms = sorted(list(set(terms)))
         if terms == []:
             if screen:
-                print('NONE')
+                print(colored('NONE', 'cyan'))
         else:
             for term in terms:
                 if screen:
                     parent_list = []
                     for term_tuple in walk_hierarchy(term[0], 'parents'):
                         parent_list.append(term_tuple[0])
-                    t = colored(term[0]+' '+term[1]+' '*max(1, (35-len(term[1])))+'-> Parents: '+'; '.join(parent_list), 'cyan')
-                    print(t)
+                    print(colored(term[0]+' '+term[1]+' '*max(1, (35-len(term[1]))), 'cyan')+'-> BT: '+colored('; '.join(parent_list), 'cyan'))
         umls_list.append([term[1] for term in terms])
     return ['\n'.join(terms) for terms in umls_list]
 
