@@ -217,10 +217,13 @@ def  get_umls_terms(title, author, text, tags, screen):
         else:
             for term in terms:
                 if screen:
-                    parent_list = []
+                    parent_list, id_list = [], []
                     for term_tuple in walk_hierarchy(term[0], 'parents'):
                         parent_list.append(term_tuple[0])
-                    print(colored(term[0]+' '+term[1]+' '*max(1, (35-len(term[1]))), 'cyan')+'-> BT: '+colored('; '.join(parent_list), 'cyan'))
+                        id_list.append(term_tuple[1])
+                        parents = '; '.join(parent_list)
+                        root_terms = '; '.join(get_roots(id_list))
+                    print(colored(term[0]+' '+term[1]+' '*max(1, (35-len(term[1]))), 'cyan')+'-> BT: '+colored(parents, 'cyan')+' '*max(1, (35-len(parents)))+'-> Roots: '+colored(root_terms, 'cyan'))
         umls_list.append([term[1] for term in terms])
     return ['\n'.join(terms) for terms in umls_list]
 
@@ -304,3 +307,21 @@ def walk_hierarchy(identifier, operation):
             break
     return terms
 
+#get roots
+def get_roots(identifiers):
+    mesh_categories = []
+    for identifier in identifiers:
+        parents = walk_hierarchy(identifier, 'parents')
+        for parent in parents:
+            test = parent
+            while True:
+                try:
+                    t = walk_hierarchy(test[1], 'parents')[0][1][0]
+                    if t != 'D': # i.e. not a MeSH term
+                        mesh_categories.append(test[0])
+                        break
+                    else:
+                        test = walk_hierarchy(test[1], 'parents')[0]
+                except:
+                    break
+    return list(set(mesh_categories))
