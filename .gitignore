@@ -1,7 +1,5 @@
 bin/
 lib/
-lib64
-share/
 pyvenv.cfg
 *.pdf
 *.bk
@@ -10,11 +8,3 @@ auto-tag/__pycache__/
 auto-tag/output/
 auto-tag/apikey.txt
 
-_site/
-.sass-cache/
-.jekyll-metadata
-_pdf
-.DS_Store
-.idea
-vendor/
-.bundle/
