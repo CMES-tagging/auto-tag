@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings('ignore')
+
 import os
 import pdftotext
 import re
@@ -8,15 +11,15 @@ import spacy
 import scispacy
 
 #Core models
-import en_core_sci_sm
-import en_core_sci_md
-import en_core_sci_lg
+#import en_core_sci_sm
+#import en_core_sci_md
+#import en_core_sci_lg
 
 #NER specific models
-import en_ner_craft_md
+#import en_ner_craft_md
 import en_ner_bc5cdr_md
-import en_ner_jnlpba_md
-import en_ner_bionlp13cg_md
+#import en_ner_jnlpba_md
+#import en_ner_bionlp13cg_md
 
 #Tools for extracting & displaying data
 from spacy import displacy
@@ -49,21 +52,39 @@ def remove_lines(doc):
   for page in doc:
     newpage = []
     for line in page:
-      if line.lstrip()[:16].lower() == 'editor-in-chief:':
+      if line.lstrip()[:15].lower() == 'editor-in-chief':
         pass
-      elif line.lstrip()[:17].lower() == 'executive editor:':
+      elif line.lstrip()[:15].lower() == 'editor in chief':
         pass
-      elif line.lstrip()[:17].lower() == 'associate editor:':
+      elif line.lstrip()[:16].lower() == 'executive editor':
         pass
-      elif line.lstrip()[:13].lower() == 'print editor:':
+      elif line.lstrip()[:15].lower() == 'managing editor':
+        pass
+      elif line.lstrip()[:25].lower() == 'associate managing editor':
+        pass
+      elif line.lstrip()[:12].lower() == 'pcma editors':
+        pass
+      elif line.lstrip()[:16].lower() == 'associate editor':
+        pass
+      elif line.lstrip()[:12].lower() == 'print editor':
+        pass
+      elif line.lstrip()[:15].lower() == 'abstract editor':
         pass
       elif line.strip() == '':
         pass
       elif re.search(r'(January|February|March|April|May|June|July|August|September|October|November|December)\s20\d+.*?Volume\s+\d+.*?Issue\s+\d+', line.strip()):
         pass
+      elif re.search(r'(January|February|March|April|May|June|July|August|September|October|November|December)\s\d\d\d\d\s|\sAbstract', line.strip()):
+        pass
       elif re.search(r'^[0-9]+$', line.strip()):
         pass
-      elif re.search(r'^\d+\s+EM:RAP Written Summary.*?www.emrap.org\s*?$', line.strip()):
+      elif re.search(r'^\d+\s+em:rap written summary.*?www.emrap.org\s*?$', line.strip().lower()):
+        pass
+      elif re.search(r'emrap.org', line.strip().lower()):
+        pass
+      elif re.search(r'primary care medical abstracts', line.strip().lower()):
+        pass
+      elif re.search(r'right on prime', line.strip().lower()):
         pass
       elif line.strip().lower() == 'notes':
         pass
@@ -98,7 +119,7 @@ def line_midpoint(page):
 # split lines by finding spaces near midpoint
 def split_line(line, mid):
     try:
-        match = re.search('\s{3}(?=\S)', line[mid-20:mid+20])
+        match = re.search('\s{2}(?=\S)', line[mid-20:mid+20])
         if match:
             # return tuple with line split
             return (line[:mid-25+match.span()[0]].strip(), line[mid-25+match.span()[1]:].strip())
@@ -136,19 +157,24 @@ def split_articles(doc):
     split_text = []
     title_pos = []
     titles = []
-    current = 0
+    authors = []
+    p1 = -1
     text = [line for page in doc for line in page]
     for i, line in enumerate(text):
         if re.search(r'(MD|DO)', line):
-            title_pos.append(i)
+            p2 = i-1
             titles.append(text[i-1])
+            authors.append(text[i])
+            if p1 != -1:
+                title_pos.append((p1,p2))
+            p1 = i+1
+    title_pos.append((p1,i+1))
     for pos in title_pos:
         article_text = []
-        for line in text[current : pos-1]:
+        for line in text[pos[0] : pos[1]]:
             article_text.append(line)
         split_text.append(article_text)
-        current = pos-1
-    return titles, [' '.join(article) for article in split_text]            
+    return titles, authors, ['\n'.join(article) for article in split_text]            
 
 def contraction_expansion(text):
     expanded_word = []    
@@ -172,27 +198,23 @@ def list_to_string(lst):
     lst = [str(term) for term in lst]
     return ' '.join(lst)
 
-def  get_umls_terms(title, author, text, tags, screen):
+def get_umls_terms(text, tags, screen, vocab, BT, Roots, CUI):
     umls_list, tag_list  = [], []
-    print('\nExisting tags:')
     if tags == []:
         print(colored('NONE', 'cyan'))
     else:
-        for tag in tags:
-            if tag == tag: # check for NaN
-                print(colored(tag, 'cyan'))
-                tag_list.append(tag)
-    print('\nTitle:', colored(title, 'cyan'))
-    print('Authors:', colored(author, 'cyan'))
+        tag_string = ', '.join([tag for tag in tags if tag==tag])
+        print('Existing tags:', colored(tag_string, 'cyan'))
+        tag_list = tag_string.split(', ')
     umls_list.append(tag_list)
-    models = ['en_core_sci_lg','en_ner_craft_md','en_ner_bc5cdr_md','en_ner_jnlpba_md','en_ner_bionlp13cg_md']
+    models = ['en_ner_bc5cdr_md'] #['en_core_sci_lg','en_ner_craft_md','en_ner_bc5cdr_md','en_ner_jnlpba_md','en_ner_bionlp13cg_md']
     first = True
     for model in models:
         if screen:
-            print('\nSuggested MeSH terms (using', model+'):')
+            print('Suggested terms (using', model+'):')
         else:
             if first:
-                print('\nWriting CSV.', end='')
+                print('Writing CSV.', end='')
                 first = False
             else:
                 print('.', end='', flush=True)
@@ -217,13 +239,19 @@ def  get_umls_terms(title, author, text, tags, screen):
         else:
             for term in terms:
                 if screen:
-                    parent_list, id_list = [], []
-                    for term_tuple in walk_hierarchy(term[0], 'parents'):
-                        parent_list.append(term_tuple[0])
-                        id_list.append(term_tuple[1])
-                        parents = '; '.join(parent_list)
-                        root_terms = '; '.join(get_roots(id_list))
-                    print(colored(term[0]+' '+term[1]+' '*max(1, (35-len(term[1]))), 'cyan')+'-> BT: '+colored(parents, 'cyan')+' '*max(1, (35-len(parents)))+'-> Roots: '+colored(root_terms, 'cyan'))
+                    print(colored(term[0]+' '+term[1], 'cyan'))
+                    if BT:
+                        parent_list, id_list = [], []
+                        for term_tuple in walk_hierarchy(term[0], 'parents'):
+                            parent_list.append(term_tuple[0])
+                            id_list.append(term_tuple[1])
+                        #parents = '; '.join(parent_list)
+                        for parent in parent_list:
+                          print(' '*9+'BT  '+colored(parent, 'cyan'))
+                        if Roots:
+                            #root_terms = '; '.join(get_roots(id_list))
+                            for root in get_roots(id_list):
+                                print(' '*9+'Root:  '+colored(root, 'cyan'))
         umls_list.append([term[1] for term in terms])
     return ['\n'.join(terms) for terms in umls_list]
 

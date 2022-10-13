@@ -1,33 +1,59 @@
 ,id,filename,tags,en_core_sci_lg,en_ner_craft_md,en_ner_bc5cdr_md,en_ner_jnlpba_md,en_ner_bionlp13cg_md
-0,5255,../../pdf/5255_02_Pediatric_Pearls_-_Pediatric_Fever_Step_by_Step_sps_.pdf,"Pediatrics
-Infectious Disease",Fever,,Fever,,
-1,5255,../../pdf/5255_02_Pediatric_Pearls_-_Pediatric_Fever_Step_by_Step_sps_.pdf,"Pediatrics
-Infectious Disease","Anti-Bacterial Agents
-Bacteria
-Bacterial Infections
+0,141,../../pdf/141_2017_Jan_Intro_MM_CN_sps.pdf,,"Abdomen
+Anesthesiology
 Blood
-Calcium Gluconate
-Child
-Emergency Service, Hospital
-Fever
-Infant
-Leukocytes
-Mortality
+Cardiac Tamponade
+Communicable Diseases
+Constriction
+Diaphragm
+Epinephrine
+Esophagus
+Extremities
+Health Resources
+Heart
+Heart Arrest
+Heart Massage
+Heart Ventricles
+Hemorrhage
+Lung
+Massage
+Movement
+Pericardium
+Phrenic Nerve
+Pneumothorax
+Polypropylenes
+Resuscitation
 Risk
-Sensitivity and Specificity
-Urinary Tract Infections
-Urine
-Urinalysis
-Observation","Anti-Bacterial Agents
-Bacteria
-Leukocytes","Bacterial Infections
-Fever
-Infections
-Retroviridae Infections
-Urinary Tract Infections",Leukocytes,"Blood
-Calcium Gluconate
-Child
-Infant
-Leukocytes
-Urinary Tract
-Urine"
+Shock, Hemorrhagic
+General Surgery
+Survival
+Sutures
+Thorax
+Vasopressins
+Ventilation
+Ventricular Fibrillation
+Wounds and Injuries
+Cardiopulmonary Resuscitation
+Point-of-Care Systems","Epinephrine
+Vasopressins","Cardiac Tamponade
+Communicable Diseases
+Epinephrine
+Heart Arrest
+Hemorrhage
+Pneumothorax
+Shock, Hemorrhagic
+Vasopressins
+Ventricular Fibrillation
+Wounds and Injuries",Vasopressins,"Abdomen
+Blood
+Cardiac Tamponade
+Diaphragm
+Epinephrine
+Esophagus
+Extremities
+Heart
+Lung
+Pericardium
+Phrenic Nerve
+Thorax
+Tissue Donors"
